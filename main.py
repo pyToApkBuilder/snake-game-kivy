@@ -201,7 +201,7 @@ class SnakeApp(App):
     def build(self):
         layout = FloatLayout()
         score_label = Label(text="", size_hint=(None, None),
-                            pos_hint={"center_x": 0.5, "center_y": 0.5}, font_size='20sp', color=(1, 1, 1, 1))
+                            pos_hint={"center_x": 0.5, "center_y": 0.95}, font_size='20sp', color=(1, 1, 1, 1))
         highscore_label = Label(text="", size_hint=(None, None),
                                 pos_hint={"center_x": 0.5, "center_y": 0.4}, font_size='20sp', color=(1, 1, 1, 1))
         state_label = Label(text="START", size_hint=(None, None), pos_hint={"center_x": 0.5, "center_y": 0.5}, font_size='50sp', color=(1, 0, 0, 1))
