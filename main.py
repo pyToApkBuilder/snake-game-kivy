@@ -216,11 +216,13 @@ class SnakeApp(App):
 
         # Schedule a frame update right after build
         Clock.schedule_once(self.force_redraw, 0.1)
-
+        Clock.schedule_once(self.force_redraw, 0.5)
         return self.layout
 
     def force_redraw(self, dt):
         self.game.draw()
+        from kivy.base import EventLoop
+        EventLoop.window.dispatch('on_draw')
 
 if __name__ == '__main__':
     SnakeApp().run()
