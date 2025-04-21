@@ -8,12 +8,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install dependencies manually
         run: |
           sudo apt update
-          sudo apt install -y wget libncurses5
+          sudo apt install -y wget
+
+          # Download and install libtinfo5 and libncurses5 from Ubuntu 20.04
           wget http://archive.ubuntu.com/ubuntu/pool/main/n/ncurses/libtinfo5_6.2-0ubuntu2_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/main/n/ncurses/libncurses5_6.2-0ubuntu2_amd64.deb
+
           sudo dpkg -i libtinfo5_6.2-0ubuntu2_amd64.deb
+          sudo dpkg -i libncurses5_6.2-0ubuntu2_amd64.deb
 
       - name: Build APK
         uses: digreatbrian/buildozer-action@v2
