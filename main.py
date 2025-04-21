@@ -11,7 +11,7 @@ from random import randint
 from kivy.core.audio import SoundLoader
 from random import randint
 import os
-
+Window.clearcolor = (0, 0, 0, 1)
 Window.fullscreen = True
 
 class SnakeGame(Widget):
@@ -150,7 +150,7 @@ class SnakeGame(Widget):
         if (new_head in self.snake or
             new_head[0] < 0 or new_head[1] < 0 or
             new_head[0] * self.cell_size >= Window.width or
-            new_head[1] * self.cell_size >= Window.height - 60):
+            new_head[1] * self.cell_size >= Window.height):
             self.running = False
             self.fade_state_label("RESTART")
             self.highscore_label.text = f"High Score: {self.store.get('score')['highscore']}"
@@ -199,20 +199,28 @@ class SnakeGame(Widget):
 
 class SnakeApp(App):
     def build(self):
-        layout = FloatLayout()
-        score_label = Label(text="", size_hint=(None, None),
+        self.layout = FloatLayout()
+        self.score_label = Label(text="", size_hint=(None, None),
                             pos_hint={"center_x": 0.5, "center_y": 0.95}, font_size='20sp', color=(1, 1, 1, 1))
-        highscore_label = Label(text="", size_hint=(None, None),
+        self.highscore_label = Label(text="", size_hint=(None, None),
                                 pos_hint={"center_x": 0.5, "center_y": 0.4}, font_size='20sp', color=(1, 1, 1, 1))
-        state_label = Label(text="START", size_hint=(None, None), pos_hint={"center_x": 0.5, "center_y": 0.5}, font_size='50sp', color=(1, 0, 0, 1))
+        self.state_label = Label(text="START", size_hint=(None, None),
+                            pos_hint={"center_x": 0.5, "center_y": 0.5}, font_size='50sp', color=(1, 0, 0, 1))
 
-        game = SnakeGame(score_label, highscore_label, state_label)
+        self.game = SnakeGame(self.score_label, self.highscore_label, self.state_label)
 
-        layout.add_widget(game)
-        layout.add_widget(score_label)
-        layout.add_widget(highscore_label)
-        layout.add_widget(state_label)
-        return layout
+        self.layout.add_widget(self.game)
+        self.layout.add_widget(self.score_label)
+        self.layout.add_widget(self.highscore_label)
+        self.layout.add_widget(self.state_label)
+
+        # Schedule a frame update right after build
+        Clock.schedule_once(self.force_redraw, 0.1)
+
+        return self.layout
+
+    def force_redraw(self, dt):
+        self.game.draw()
 
 if __name__ == '__main__':
     SnakeApp().run()
