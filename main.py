@@ -30,7 +30,7 @@ class SnakeGame(Widget):
         self.highscore_label = highscore_label
         self.state_label = state_label
 
-        # Use internal app storage
+        
         highscore_path = os.path.join(App.get_running_app().user_data_dir, 'highscore.json')
         self.store = JsonStore(highscore_path)
         if not self.store.exists('score'):
@@ -41,7 +41,7 @@ class SnakeGame(Widget):
         self.draw_border()
         self.bind(size=self.update_canvas, pos=self.update_canvas)
 
-        # Load audio
+        
         self.bg_sound = SoundLoader.load('audios/bg_music.mp3')
         self.start_sound = SoundLoader.load('audios/start.mp3')
         self.hiss_sound = SoundLoader.load('audios/hiss.wav')
@@ -73,6 +73,7 @@ class SnakeGame(Widget):
         self.running = True
         self.paused = False
         self.fade_state_label("")
+        self.highscore_label.text = ""
 
         if self.start_sound:
             self.start_sound.play()
@@ -90,7 +91,7 @@ class SnakeGame(Widget):
             return
         self.paused = not self.paused
         self.fade_state_label("PAUSE") if self.paused else self.fade_state_label("")
-
+        self.highscore_label.text = f"High Score: {self.store.get('score')['highscore']}" if self.paused else ""
         if self.paused:
             if self.hiss_sound:
                 self.hiss_sound.stop()
@@ -132,10 +133,9 @@ class SnakeGame(Widget):
             elif dy < -50 and self.direction != (0, 1):
                 self.next_direction = (0, -1)
 
-        # Start game by swiping top
         if touch.pos[1] > Window.height * 0.9:
             self.start_game()
-        # Pause game by swiping bottom
+       
         elif touch.pos[1] < Window.height * 0.1:
             self.pause_game()
 
@@ -153,6 +153,7 @@ class SnakeGame(Widget):
             new_head[1] * self.cell_size >= Window.height - 60):
             self.running = False
             self.fade_state_label("RESTART")
+            self.highscore_label.text = f"High Score: {self.store.get('score')['highscore']}"
             Clock.unschedule(self.update)
             if self.hiss_sound:
                 self.hiss_sound.stop()
@@ -177,8 +178,7 @@ class SnakeGame(Widget):
 
         if self.score > self.store.get('score')['highscore']:
             self.store.put('score', highscore=self.score)
-            self.highscore_label.text = f"High Score: {self.score}"
-
+            
         self.update_labels()
         self.draw()
 
@@ -200,12 +200,10 @@ class SnakeGame(Widget):
 class SnakeApp(App):
     def build(self):
         layout = FloatLayout()
-        score_label = Label(text="Score: 0", size_hint=(None, None),
-                            pos_hint={"x": 0.45, "top": 0.98}, font_size='20sp', color=(1, 1, 1, 1))
-        highscore_label = Label(text="High Score: 0", size_hint=(None, None),
-                                pos_hint={"x": 0.4, "top": 0.95}, font_size='20sp', color=(1, 1, 1, 1))
-        #state_label = Label(text="SWIPE UP TO START", size_hint=(None, None),
-#                            pos_hint={"x": 0.35, "top": 0.5}, font_size='30sp', color=(1, 1, 0.5, 1))
+        score_label = Label(text="", size_hint=(None, None),
+                            pos_hint={"center_x": 0.5, "center_y": 0.5}, font_size='20sp', color=(1, 1, 1, 1))
+        highscore_label = Label(text="", size_hint=(None, None),
+                                pos_hint={"center_x": 0.5, "center_y": 0.4}, font_size='20sp', color=(1, 1, 1, 1))
         state_label = Label(text="START", size_hint=(None, None), pos_hint={"center_x": 0.5, "center_y": 0.5}, font_size='50sp', color=(1, 0, 0, 1))
 
         game = SnakeGame(score_label, highscore_label, state_label)
